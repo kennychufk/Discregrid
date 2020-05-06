@@ -132,12 +132,3 @@ endif()
 # Set link libraries.
 target_link_libraries(Discregrid
 )
-
-install(TARGETS Discregrid
-		RUNTIME DESTINATION bin
-		LIBRARY DESTINATION lib
-		ARCHIVE DESTINATION lib)
-
-install(DIRECTORY include
-DESTINATION .
-PATTERN "*.hpp")
