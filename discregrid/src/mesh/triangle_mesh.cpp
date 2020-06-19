@@ -68,7 +68,7 @@ typedef std::unordered_set<Halfedge, HalfedgeHasher, HalfedgeEqualTo>
 	FaceSet;
 
 TriangleMesh::TriangleMesh(
-	std::vector<Vector3d> const& vertices,
+	std::vector<Vector3r> const& vertices,
 	std::vector<std::array<unsigned int, 3>> const& faces)
 	: m_faces(faces), m_e2e(3 * faces.size()), m_vertices(vertices)
 	, m_v2e(vertices.size())
@@ -76,7 +76,7 @@ TriangleMesh::TriangleMesh(
 	construct();
 }
 
-TriangleMesh::TriangleMesh(double const* vertices,
+TriangleMesh::TriangleMesh(Real const* vertices,
 	unsigned int const* faces,
 	std::size_t nv, std::size_t nf)
 	: m_faces(nf), m_vertices(nv), m_e2e(3 * nf), m_v2e(nv)
@@ -101,7 +101,7 @@ TriangleMesh::TriangleMesh(std::string const& path)
 	while (getline(in, line)) {
 	    if (line.substr(0, 2) == "v ") {
 	        std::istringstream s(line.substr(2));
-	        Vector3d v; s >> v.x(); s >> v.y(); s >> v.z();
+	        Vector3r v; s >> v.x(); s >> v.y(); s >> v.z();
 	        m_vertices.push_back(v);
 	    }
 	    else if (line.substr(0, 2) == "f ") {
@@ -204,12 +204,12 @@ TriangleMesh::construct()
 	}
 }
 
-Vector3d
+Vector3r
 TriangleMesh::computeFaceNormal(unsigned int f) const
 {
-	Vector3d const& x0 = vertex(faceVertex(f, 0));
-	Vector3d const& x1 = vertex(faceVertex(f, 1));
-	Vector3d const& x2 = vertex(faceVertex(f, 2));
+	Vector3r const& x0 = vertex(faceVertex(f, 0));
+	Vector3r const& x1 = vertex(faceVertex(f, 1));
+	Vector3r const& x2 = vertex(faceVertex(f, 2));
 
 	return (x1 - x0).cross(x2 - x0).normalized();
 }

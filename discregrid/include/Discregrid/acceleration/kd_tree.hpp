@@ -66,7 +66,7 @@ public:
 
 protected:
 
-    void construct(unsigned int node, Eigen::AlignedBox3d const& box,
+    void construct(unsigned int node, AlignedBox3r const& box,
         unsigned int b, unsigned int n);
     void traverseDepthFirst(unsigned int node, unsigned int depth,
         TraversalPredicate pred, TraversalCallback cb, TraversalPriorityLess const& pless) const;
@@ -75,7 +75,7 @@ protected:
 
     unsigned int addNode(unsigned int b, unsigned int n);
 
-    virtual Eigen::Vector3d const& entityPosition(unsigned int i) const = 0;
+    virtual Vector3r const& entityPosition(unsigned int i) const = 0;
     virtual void computeHull(unsigned int b, unsigned int n, HullType& hull) const = 0;
 
 protected:

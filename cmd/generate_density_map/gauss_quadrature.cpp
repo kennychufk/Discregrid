@@ -311,7 +311,7 @@ extern unsigned int const gaussian_n_1[101] = {
     51
 };
 
-extern double const gaussian_abscissae_1[101][51] = {
+extern Discregrid::Real const gaussian_abscissae_1[101][51] = {
 
     // p = 0
     {},
@@ -3117,7 +3117,7 @@ extern double const gaussian_abscissae_1[101][51] = {
      0.998909990848903528437574550480}
 };
 
-extern double const gaussian_weights_1[101][51] = {
+extern Discregrid::Real const gaussian_weights_1[101][51] = {
 
     // p = 0
     {},
@@ -5924,7 +5924,7 @@ extern double const gaussian_weights_1[101][51] = {
 };
 }
 
-double
+Discregrid::Real
 GaussQuadrature::integrate(Integrand integrand, Domain const& domain, unsigned int p)
 {
     if (p < 1)
@@ -5937,7 +5937,7 @@ GaussQuadrature::integrate(Integrand integrand, Domain const& domain, unsigned i
     auto c1 = (0.5 * (domain.min() + domain.max())).eval();
 
     auto res = 0.0;
-    auto xi = Eigen::Vector3d{};
+    auto xi = Discregrid::Vector3r{};
     for (auto i = 0u; i < n; ++i)
     {
         auto wi = gaussian_weights_1[p][i];

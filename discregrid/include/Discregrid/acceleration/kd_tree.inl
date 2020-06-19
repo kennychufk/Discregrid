@@ -12,7 +12,7 @@ KDTree<HullType>::construct()
     std::iota(m_lst.begin(), m_lst.end(), 0);
 
     // Determine bounding box of considered domain.
-    auto box = Eigen::AlignedBox3d{};
+    auto box = AlignedBox3r{};
     for (auto i = 0u; i < m_lst.size(); ++i)
         box.extend(entityPosition(i));
 
@@ -21,7 +21,7 @@ KDTree<HullType>::construct()
 }
 
 template<typename HullType> void
-KDTree<HullType>::construct(unsigned int node, Eigen::AlignedBox3d const& box, unsigned int b,
+KDTree<HullType>::construct(unsigned int node, AlignedBox3r const& box, unsigned int b,
     unsigned int n)
 {
     // If only one element is left end recursion.

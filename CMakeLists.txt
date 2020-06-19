@@ -37,6 +37,11 @@ if (BUILD_AS_SHARED_LIBS)
 	endif(WIN32)	
 endif (BUILD_AS_SHARED_LIBS)
 
+OPTION(USE_DOUBLE_PRECISION "Use double precision"	OFF)
+if (USE_DOUBLE_PRECISION)
+	add_definitions( -DUSE_DOUBLE)	
+endif (USE_DOUBLE_PRECISION)
+
 if (NOT WIN32)
   # set build type as Release by default
   if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)

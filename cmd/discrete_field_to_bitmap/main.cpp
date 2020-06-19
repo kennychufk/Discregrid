@@ -13,7 +13,7 @@ using namespace Eigen;
 
 namespace
 {
-std::array<unsigned char, 3u> doubleToGreenBlueInverse(double v)
+std::array<unsigned char, 3u> realToGreenBlueInverse(Discregrid::Real v)
 {
 	if (v >= 0.0)
 	{
@@ -22,7 +22,7 @@ std::array<unsigned char, 3u> doubleToGreenBlueInverse(double v)
 	return {{0u, 0u, static_cast<unsigned char>(std::min(std::max(255.0 * (1.0 + v), 0.0), 255.0))}};
 }
 
-std::array<unsigned char, 3u> doubleToRedSequential(double v)
+std::array<unsigned char, 3u> realToRedSequential(Discregrid::Real v)
 {
 	return {{static_cast<unsigned char>(std::min(std::max(255.0 * v, 0.0), 255.0)), 0u, 0u}};
 }
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 	("f,field_id", "ID in which the SDF to export is stored.", cxxopts::value<unsigned int>()->default_value("0"))
 	("s,samples", "Number of samples in width direction", cxxopts::value<unsigned int>()->default_value("1024"))
 	("p,plane", "Plane in which the image slice is extracted", cxxopts::value<std::string>()->default_value("xy"))
-	("d,depth", "Relative depth value between -1 and 1 in direction of the axis orthogonal to the plane", cxxopts::value<double>()->default_value("0"))
+	("d,depth", "Relative depth value between -1 and 1 in direction of the axis orthogonal to the plane", cxxopts::value<Discregrid::Real>()->default_value("0"))
 	("o,output", "Output (in bmp format)", cxxopts::value<std::string>()->default_value(""))
 	("c,colormap", "Color map options: redsequential (rs), green blue inverse diverging (gb) (suitable for visualiztion of signed distance fields)", cxxopts::value<std::string>()->default_value("gb"))
 	("input", "SDF file", cxxopts::value<std::vector<std::string>>())
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 		}
 		std::cout << "DONE" << std::endl;
 
-		auto depth = result["d"].as<double>();
+		auto depth = result["d"].as<Discregrid::Real>();
 		auto const& domain = sdf->domain();
 		auto diag = domain.diagonal().eval();
 
@@ -104,12 +104,12 @@ int main(int argc, char* argv[])
 			dir(2) = 2;
 
 		auto xsamples = result["s"].as<unsigned int>();
-		auto ysamples = static_cast<unsigned int>(std::round(diag(dir(1)) / diag(dir(0)) * static_cast<double>(xsamples)));
+		auto ysamples = static_cast<unsigned int>(std::round(diag(dir(1)) / diag(dir(0)) * static_cast<Discregrid::Real>(xsamples)));
 
 		auto xwidth = diag(dir(0)) / xsamples;
 		auto ywidth = diag(dir(1)) / ysamples;
 
-		auto data = std::vector<double>{};
+		auto data = std::vector<Discregrid::Real>{};
 		data.resize(xsamples * ysamples);
 
 		auto field_id = result["f"].as<unsigned int>();
@@ -121,19 +121,19 @@ int main(int argc, char* argv[])
 			auto i = k % xsamples;
 			auto j = k / xsamples;
 
-			auto xr = static_cast<double>(i) / static_cast<double>(xsamples);
-			auto yr = static_cast<double>(j) / static_cast<double>(ysamples);
+			auto xr = static_cast<Discregrid::Real>(i) / static_cast<Discregrid::Real>(xsamples);
+			auto yr = static_cast<Discregrid::Real>(j) / static_cast<Discregrid::Real>(ysamples);
 
 			auto x = domain.min()(dir(0)) + xr * diag(dir(0)) + 0.5 * xwidth;
 			auto y = domain.min()(dir(1)) + yr * diag(dir(1)) + 0.5 * ywidth;
 
-			auto sample = Vector3d{};
+			auto sample = Discregrid::Vector3r{};
 			sample(dir(0)) = x;
 			sample(dir(1)) = y;
 			sample(dir(2)) = domain.min()(dir(2)) + 0.5 * (1.0 + depth) * diag(dir(2));
 
 			data[k] = sdf->interpolate(field_id, sample);
-			if (data[k] == std::numeric_limits<double>::max())
+			if (data[k] == std::numeric_limits<Discregrid::Real>::max())
 			{
 				data[k] = 0.0;
 			}
@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
 		std::cout << "Ouput file: " << out_file << std::endl;
 
 		std::cout << "Export BMP...";
-		std::transform(data.begin(), data.end(), data.begin(), [&max_v, &min_v](double v) {return v >= 0.0 ? v / std::abs(max_v) : v / std::abs(min_v); });
+		std::transform(data.begin(), data.end(), data.begin(), [&max_v, &min_v](Discregrid::Real v) {return v >= 0.0 ? v / std::abs(max_v) : v / std::abs(min_v); });
 
 		auto pixels = std::vector<std::array<unsigned char, 3u>>(data.size());
 
@@ -170,9 +170,9 @@ int main(int argc, char* argv[])
 		}
 
 		if (cm == "gb")
-			std::transform(data.begin(), data.end(), pixels.begin(), doubleToGreenBlueInverse);
+			std::transform(data.begin(), data.end(), pixels.begin(), realToGreenBlueInverse);
 		else if (cm == "rs")
-			std::transform(data.begin(), data.end(), pixels.begin(), doubleToRedSequential);
+			std::transform(data.begin(), data.end(), pixels.begin(), realToRedSequential);
 
 		BmpReaderWriter::saveFile(out_file.c_str(), xsamples, ysamples, &pixels.front()[0]);
 		std::cout << "DONE" << std::endl;

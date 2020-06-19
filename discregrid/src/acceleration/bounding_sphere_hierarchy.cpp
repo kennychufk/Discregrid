@@ -10,7 +10,7 @@ namespace Discregrid
 {
 
 TriangleMeshBSH::TriangleMeshBSH(
-	std::vector<Vector3d> const& vertices,
+	std::vector<Vector3r> const& vertices,
 	std::vector<std::array<unsigned int, 3>> const& faces)
 	: super(faces.size()), m_faces(faces), m_vertices(vertices), 
 		m_tri_centers(faces.size())
@@ -23,7 +23,7 @@ TriangleMeshBSH::TriangleMeshBSH(
 		});
 }
 
-Vector3d const&
+Vector3r const&
 TriangleMeshBSH::entityPosition(unsigned int i) const
 {
 	return m_tri_centers[i];
@@ -32,7 +32,7 @@ TriangleMeshBSH::entityPosition(unsigned int i) const
 void
 TriangleMeshBSH::computeHull(unsigned int b, unsigned int n, BoundingSphere& hull) const
 {
-	auto vertices_subset = std::vector<Vector3d>(3 * n);
+	auto vertices_subset = std::vector<Vector3r>(3 * n);
 	for (unsigned int i(0); i < n; ++i)
 	{
 		auto const& f = m_faces[m_lst[b + i]];
@@ -50,7 +50,7 @@ TriangleMeshBSH::computeHull(unsigned int b, unsigned int n, BoundingSphere& hul
 }
 
 TriangleMeshBBH::TriangleMeshBBH(
-	std::vector<Vector3d> const& vertices,
+	std::vector<Vector3r> const& vertices,
 	std::vector<std::array<unsigned int, 3>> const& faces)
 	: super(faces.size()), m_faces(faces), m_vertices(vertices), 
 		m_tri_centers(faces.size())
@@ -63,14 +63,14 @@ TriangleMeshBBH::TriangleMeshBBH(
 		});
 }
 
-Vector3d const&
+Vector3r const&
 TriangleMeshBBH::entityPosition(unsigned int i) const
 {
 	return m_tri_centers[i];
 }
 
 void
-TriangleMeshBBH::computeHull(unsigned int b, unsigned int n, AlignedBox3d& hull) const
+TriangleMeshBBH::computeHull(unsigned int b, unsigned int n, AlignedBox3r& hull) const
 {
 	for (auto i = 0u; i < n; ++i)
 	{
@@ -88,13 +88,13 @@ PointCloudBSH::PointCloudBSH()
 {
 }
 
-PointCloudBSH::PointCloudBSH(std::vector<Vector3d> const& vertices)
+PointCloudBSH::PointCloudBSH(std::vector<Vector3r> const& vertices)
 	: super(vertices.size()), m_vertices(&vertices)
 {
 
 }
 
-Vector3d const&
+Vector3r const&
 PointCloudBSH::entityPosition(unsigned int i) const
 {
 	return (*m_vertices)[i];
@@ -103,7 +103,7 @@ PointCloudBSH::entityPosition(unsigned int i) const
 void
 PointCloudBSH::computeHull(unsigned int b, unsigned int n, BoundingSphere& hull) const
 {
-	auto vertices_subset = std::vector<Vector3d>(n);
+	auto vertices_subset = std::vector<Vector3r>(n);
 	for (unsigned int i = b; i < n + b; ++i)
 		vertices_subset[i - b] = (*m_vertices)[m_lst[i]];
 

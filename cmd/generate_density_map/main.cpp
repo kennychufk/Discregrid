@@ -18,7 +18,7 @@ std::istream& operator>>(std::istream& is, std::array<unsigned int, 3>& data)
 	return is;
 }
 
-std::istream& operator>>(std::istream& is, AlignedBox3d& data)
+std::istream& operator>>(std::istream& is, Discregrid::AlignedBox3r& data)
 {
 	is	>> data.min()[0] >> data.min()[1] >> data.min()[2]
 		>> data.max()[0] >> data.max()[1] >> data.max()[2];
@@ -33,9 +33,9 @@ int main(int argc, char* argv[])
 
 	options.add_options()
 	("h,help", "Prints this help text")
-	("r,rest_density", "Rest density rho0 of the fluid", cxxopts::value<double>()->default_value("1000.0"))
+	("r,rest_density", "Rest density rho0 of the fluid", cxxopts::value<Discregrid::Real>()->default_value("1000.0"))
 	("i,invert", "Invert field")
-	("s,smoothing_length", "Kernel smoothing length", cxxopts::value<double>()->default_value("0.1"))
+	("s,smoothing_length", "Kernel smoothing length", cxxopts::value<Discregrid::Real>()->default_value("0.1"))
 	("o,output", "Ouput file in cdf format", cxxopts::value<std::string>()->default_value(""))
 	("no-reduction", "Disables discarding of cells for sparse layout.")
 	("input", "Discrete grid file containing input SDF in field 0", cxxopts::value<std::vector<std::string>>())
@@ -80,28 +80,28 @@ int main(int argc, char* argv[])
 		}
 		std::cout << "DONE" << std::endl;
 
-		auto h = result["s"].as<double>();
+		auto h = result["s"].as<Discregrid::Real>();
 		auto sph_kernel = CubicKernel{};
 		sph_kernel.setRadius(h);
-		auto gamma = [&](Vector3d const& x)
+		auto gamma = [&](Discregrid::Vector3r const& x)
 		{
 			auto ar = sph_kernel.getRadius();
 			auto dist = sdf->interpolate(0u, x);
 			if (dist > ar)
-				return 0.0;
-			return 1.0 - dist / ar;
+				return static_cast<Discregrid::Real>(0.0);
+			return static_cast<Discregrid::Real>(1.0) - dist / ar;
 		};
-		auto int_domain = AlignedBox3d(Vector3d::Constant(-h), Vector3d::Constant(h));
-		auto rho0 = result["r"].as<double>();
-		auto density_func = [&](Vector3d const& x)
+		auto int_domain = Discregrid::AlignedBox3r(Discregrid::Vector3r::Constant(-h), Discregrid::Vector3r::Constant(h));
+		auto rho0 = result["r"].as<Discregrid::Real>();
+		auto density_func = [&](Discregrid::Vector3r const& x)
 		{
 			auto dist = sdf->interpolate(0u, x);
 			if (dist > 2.0 * sph_kernel.getRadius())
 			{
-				return 0.0;
+				return static_cast<Discregrid::Real>(0.0);
 			}
 
-			auto integrand = [&sph_kernel, &gamma, &x](Vector3d const& xi)
+			auto integrand = [&sph_kernel, &gamma, &x](Discregrid::Vector3r const& xi)
 			{
 				auto res = gamma(x + xi) * sph_kernel.W(xi);
 				return res;
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
 
 		auto cell_diag = sdf->cellSize().norm();
 		std::cout << "Generate density map..." << std::endl;
-		sdf->addFunction(density_func, true, [&](Vector3d const& x_)
+		sdf->addFunction(density_func, true, [&](Discregrid::Vector3r const& x_)
 		{
 			if (no_reduction)
 			{
@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
 			}
 			auto x = x_.cwiseMax(sdf->domain().min()).cwiseMin(sdf->domain().max());
 			auto dist = sdf->interpolate(0u, x);
-			if (dist == std::numeric_limits<double>::max())
+			if (dist == std::numeric_limits<Discregrid::Real>::max())
 			{
 				return false;
 			}
@@ -135,11 +135,11 @@ int main(int argc, char* argv[])
 		if (result["no-reduction"].count() == 0u)
 		{
 			std::cout << "Reduce discrete fields...";
-			sdf->reduceField(0u, [&](const Vector3d &, double v)
+			sdf->reduceField(0u, [&](const Discregrid::Vector3r &, Discregrid::Real v)
 			{
 				return -6.0 * h < v + cell_diag && v - cell_diag < 2.0 * h;
 			});
-			sdf->reduceField(1u, [&](const Vector3d &, double v)
+			sdf->reduceField(1u, [&](const Discregrid::Vector3r &, Discregrid::Real v)
 			{
 				return 0.0 <= v && v <= 3.0 * rho0;
 			});

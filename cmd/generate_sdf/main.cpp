@@ -16,7 +16,7 @@ std::istream& operator>>(std::istream& is, std::array<unsigned int, 3>& data)
 	return is;  
 }  
 
-std::istream& operator>>(std::istream& is, AlignedBox3d& data)  
+std::istream& operator>>(std::istream& is, Discregrid::AlignedBox3r& data)  
 {  
 	is	>> data.min()[0] >> data.min()[1] >> data.min()[2]
 		>> data.max()[0] >> data.max()[1] >> data.max()[2];  
@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 	options.add_options()
 	("h,help", "Prints this help text")
 	("r,resolution", "Grid resolution", cxxopts::value<std::array<unsigned int, 3>>()->default_value("10 10 10"))
-	("d,domain", "Domain extents (bounding box), format: \"minX minY minZ maxX maxY maxZ\"", cxxopts::value<AlignedBox3d>())
+	("d,domain", "Domain extents (bounding box), format: \"minX minY minZ maxX maxY maxZ\"", cxxopts::value<Discregrid::AlignedBox3r>())
 	("i,invert", "Invert SDF")
 	("o,output", "Ouput file in cdf format", cxxopts::value<std::string>()->default_value(""))
 	("input", "OBJ file containing input triangle mesh", cxxopts::value<std::vector<std::string>>())
@@ -74,11 +74,11 @@ int main(int argc, char* argv[])
 		Discregrid::MeshDistance md(mesh);
 		std::cout << "DONE" << std::endl;
 
-		Eigen::AlignedBox3d domain;
+		Discregrid::AlignedBox3r domain;
 		domain.setEmpty();
 		if (result.count("d"))
 		{
-			domain = result["d"].as<Eigen::AlignedBox3d>();
+			domain = result["d"].as<Discregrid::AlignedBox3r>();
 		}
 		if (domain.isEmpty())
 		{
@@ -86,19 +86,19 @@ int main(int argc, char* argv[])
 			{
 				domain.extend(x);
 			}
-			domain.max() += 1.0e-3 * domain.diagonal().norm() * Vector3d::Ones();
-			domain.min() -= 1.0e-3 * domain.diagonal().norm() * Vector3d::Ones();
+			domain.max() += 1.0e-3 * domain.diagonal().norm() * Discregrid::Vector3r::Ones();
+			domain.min() -= 1.0e-3 * domain.diagonal().norm() * Discregrid::Vector3r::Ones();
 		}
 
 		Discregrid::CubicLagrangeDiscreteGrid sdf(domain, resolution);
 		auto func = Discregrid::DiscreteGrid::ContinuousFunction{};
 		if (result.count("invert"))
 		{
-			func = [&md](Vector3d const& xi) {return -1.0 * md.signedDistanceCached(xi); };
+			func = [&md](Discregrid::Vector3r const& xi) {return -1.0 * md.signedDistanceCached(xi); };
 		}
 		else
 		{
-			func = [&md](Vector3d const& xi) {return md.signedDistanceCached(xi); };
+			func = [&md](Discregrid::Vector3r const& xi) {return md.signedDistanceCached(xi); };
 		}
 
 		std::cout << "Generate discretization..." << std::endl;

@@ -1,35 +1,36 @@
 #pragma once
 
 
+#include <Discregrid/common.hpp>
 #include <Eigen/Dense>
 
 class CubicKernel
 {
 public:
-	 double getRadius() { return m_radius; }
-	 void setRadius(double val)
+	 Discregrid::Real getRadius() { return m_radius; }
+	 void setRadius(Discregrid::Real val)
 	{
 		m_radius = val;
-		const double pi = static_cast<double>(M_PI);
+		const Discregrid::Real pi = static_cast<Discregrid::Real>(M_PI);
 
-		const double h3 = m_radius*m_radius*m_radius;
+		const Discregrid::Real h3 = m_radius*m_radius*m_radius;
 		m_k = 8.0 / (pi*h3);
 		m_l = 48.0 / (pi*h3);
-		m_W_zero = W(Eigen::Vector3d::Zero());
+		m_W_zero = W(Discregrid::Vector3r::Zero());
 	}
 
 public:
-	double W(Eigen::Vector3d const& r)
+	Discregrid::Real W(Discregrid::Vector3r const& r)
 	{
-		double res = 0.0;
-		const double rl = r.norm();
-		const double q = rl/m_radius;
+		Discregrid::Real res = 0.0;
+		const Discregrid::Real rl = r.norm();
+		const Discregrid::Real q = rl/m_radius;
 		if (q <= 1.0)
 		{
 			if (q <= 0.5)
 			{
-				const double q2 = q*q;
-				const double q3 = q2*q;
+				const Discregrid::Real q2 = q*q;
+				const Discregrid::Real q3 = q2*q;
 				res = m_k * (6.0*q3-6.0*q2+1.0);
 			}
 			else
@@ -41,24 +42,24 @@ public:
 		return res;
 	}
 
-	Eigen::Vector3d gradW(const Eigen::Vector3d &r)
+	Discregrid::Vector3r gradW(const Discregrid::Vector3r &r)
 	{
 		using namespace Eigen;
-		Vector3d res;
-		const double rl = r.norm();
-		const double q = rl / m_radius;
+		Discregrid::Vector3r res;
+		const Discregrid::Real rl = r.norm();
+		const Discregrid::Real q = rl / m_radius;
 		if (q <= 1.0)
 		{
 			if (rl > 1.0e-6)
 			{
-				const Vector3d gradq = r * ((double) 1.0 / (rl*m_radius));
+				const Discregrid::Vector3r gradq = r * ((Discregrid::Real) 1.0 / (rl*m_radius));
 				if (q <= 0.5)
 				{
-					res = m_l*q*((double) 3.0*q - (double) 2.0)*gradq;
+					res = m_l*q*((Discregrid::Real) 3.0*q - (Discregrid::Real) 2.0)*gradq;
 				}
 				else
 				{
-					const double factor = 1.0 - q;
+					const Discregrid::Real factor = 1.0 - q;
 					res = m_l*(-factor*factor)*gradq;
 				}
 			}
@@ -69,14 +70,14 @@ public:
 		return res;
 	}
 
-	double W_zero()
+	Discregrid::Real W_zero()
 	{
 		return m_W_zero;
 	}
 
 private:
-	double m_radius;
-	double m_k;
-	double m_l;
-	double m_W_zero;
+	Discregrid::Real m_radius;
+	Discregrid::Real m_k;
+	Discregrid::Real m_l;
+	Discregrid::Real m_W_zero;
 };

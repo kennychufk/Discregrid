@@ -2,6 +2,7 @@
 set(HEADERS
 	include/Discregrid/discrete_grid.hpp
 	include/Discregrid/cubic_lagrange_discrete_grid.hpp
+	include/Discregrid/common.hpp
 )
 
 set(HEADERS_ACCELERATION

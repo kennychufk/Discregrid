@@ -13,38 +13,38 @@ public:
 
 	using super = KDTree<BoundingSphere>;
 
-	TriangleMeshBSH(std::vector<Eigen::Vector3d> const& vertices,
+	TriangleMeshBSH(std::vector<Vector3r> const& vertices,
 		std::vector<std::array<unsigned int, 3>> const& faces);
 
-	Eigen::Vector3d const& entityPosition(unsigned int i) const final;
+	Vector3r const& entityPosition(unsigned int i) const final;
 	void computeHull(unsigned int b, unsigned int n, BoundingSphere& hull) const final;
 
 private:
 
-	std::vector<Eigen::Vector3d> const& m_vertices;
+	std::vector<Vector3r> const& m_vertices;
 	std::vector<std::array<unsigned int, 3>> const& m_faces;
 
-	std::vector<Eigen::Vector3d> m_tri_centers;
+	std::vector<Vector3r> m_tri_centers;
 };
 
-class TriangleMeshBBH : public KDTree<Eigen::AlignedBox3d>
+class TriangleMeshBBH : public KDTree<AlignedBox3r>
 {
 public:
 
-	using super = KDTree<Eigen::AlignedBox3d>;
+	using super = KDTree<AlignedBox3r>;
 
-	TriangleMeshBBH(std::vector<Eigen::Vector3d> const& vertices,
+	TriangleMeshBBH(std::vector<Vector3r> const& vertices,
 		std::vector<std::array<unsigned int, 3>> const& faces);
 
-	Eigen::Vector3d const& entityPosition(unsigned int i) const final;
-	void computeHull(unsigned int b, unsigned int n, Eigen::AlignedBox3d& hull) const final;
+	Vector3r const& entityPosition(unsigned int i) const final;
+	void computeHull(unsigned int b, unsigned int n, AlignedBox3r& hull) const final;
 
 private:
 
-	std::vector<Eigen::Vector3d> const& m_vertices;
+	std::vector<Vector3r> const& m_vertices;
 	std::vector<std::array<unsigned int, 3>> const& m_faces;
 
-	std::vector<Eigen::Vector3d> m_tri_centers;
+	std::vector<Vector3r> m_tri_centers;
 
 
 };
@@ -57,15 +57,15 @@ public:
 	using super = KDTree<BoundingSphere>;
 
 	PointCloudBSH();
-	PointCloudBSH(std::vector<Eigen::Vector3d> const& vertices);
+	PointCloudBSH(std::vector<Vector3r> const& vertices);
 
-	Eigen::Vector3d const& entityPosition(unsigned int i) const final;
+	Vector3r const& entityPosition(unsigned int i) const final;
 	void computeHull(unsigned int b, unsigned int n, BoundingSphere& hull)
 		const final;
 
 private:
 
-	std::vector<Eigen::Vector3d> const* m_vertices;
+	std::vector<Vector3r> const* m_vertices;
 };
 
 }
