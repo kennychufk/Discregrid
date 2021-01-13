@@ -5,14 +5,6 @@ set(HEADERS
 	include/Discregrid/common.hpp
 )
 
-set(HEADERS_ACCELERATION
-
-	include/Discregrid/acceleration/bounding_sphere_hierarchy.hpp
-	include/Discregrid/acceleration/bounding_sphere.hpp
-	include/Discregrid/acceleration/kd_tree.hpp
-	include/Discregrid/acceleration/kd_tree.inl
-)
-
 set(HEADERS_MESH
 	include/Discregrid/mesh/triangle_mesh.hpp
 	include/Discregrid/mesh/entity_containers.hpp
@@ -109,7 +101,6 @@ endif(WIN32)
 set(DISCREGRID_SOURCE_FILES
 	${HEADERS}
 	${SOURCES}
-	${HEADERS_ACCELERATION}
 	${SOURCES_ACCELERATION}
 	${SOURCES_DATA}
 	${HEADERS_MESH}

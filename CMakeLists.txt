@@ -58,7 +58,7 @@ set(LIBRARY_OUTPUT_PATH    "${PROJECT_BINARY_DIR}/bin")
 
 add_subdirectory(discregrid)
 
-option(BUILD_CMD_EXECUTABLE "Build command line executable" ON)
+option(BUILD_CMD_EXECUTABLE "Build command line executable" OFF)
 if(BUILD_CMD_EXECUTABLE)
 	add_subdirectory(cmd)
 endif(BUILD_CMD_EXECUTABLE)

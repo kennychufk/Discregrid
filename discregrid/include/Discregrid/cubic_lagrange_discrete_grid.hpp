@@ -66,12 +66,8 @@ public:
         std::vector<std::vector<std::array<unsigned int, 32>>> const& cell_data() const { return m_cells; }
         std::vector<std::vector<unsigned int>>& cell_map_data() { return m_cell_map; }
         std::vector<std::vector<unsigned int>> const& cell_map_data() const { return m_cell_map; }
-private:
-
 	Vector3r indexToNodePosition(unsigned int l) const;
 
-
-private:
 
 	std::vector<std::vector<Real>> m_nodes;
 	std::vector<std::vector<std::array<unsigned int, 32>>> m_cells;
